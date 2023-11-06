@@ -22,50 +22,18 @@ This project is based on the popular Christmas game __Secret Santa__ where frien
 
 </details>
 
-## Running the application locally
+## Running the application from jenkins
 
-Secret Santa Generator is a Spring Boot application built using Maven. You can build a jar file and run it from the command line:
+job build step 1 --package
+step 2 -- execute shell --
+java -jar -Dserver.port:8081 target/*.jar
+execute jar file to run application..
 
-```
-git clone https://github.com/NotTheBest/secretsanta-generator.git
-cd secretsanta-generator
-./mvnw package
+
+
+extra notes:::::::::::::::::
 java -jar target/*.jar
-```
-You can then access the application here: http://localhost:8080/
-
-![Welcome](https://github.com/NotTheBest/secretsanta-generator/blob/master/preview-images/welcomepage.png?raw=true)
-
+You can then access the application here: http://jenkinspubip:8080/
 Or you can run it from Maven directly using the Spring Boot Maven plugin.
 
 ```
-./mvnw spring-boot:run
-```
-
-## Database Configuration
-This project uses an in-memory database (H2). If you would like to work on the project, enable the `http://localhost:8080/h2-console` via the property :
-
-```spring.h2.console.enabled=true```
-
-in __application.properties__.
-
-The database url used is `jdbc:h2:mem:testdb`.
-## About
-
-This project was a personal project to learn more about Spring development, database management, and industry application architecture.
-
-A small summary of the skills showcased during this project: :small_red_triangle_down:
-
-* Java Spring Core, HTML5, CSS and similar topics
-* Spring MVC Controller and View management & annotations
-* Spring Boot capabilities, annotations, usage, and deployment
-* Thymeleaf technology, syntax, usage, capabilities, more
-* Client/Server data transfer
-* JPA annotations and repository management
-* H2 in-memory database management
-* Software/web application development processes
-* MVC architecture along with DAO, model, service layers, and similar
-* Accessibility, web design
-* Web application debugging
-* Where Santa lives
-* More! :)
