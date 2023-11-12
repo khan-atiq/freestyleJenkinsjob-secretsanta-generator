@@ -1,0 +1,113 @@
+pipeline {
+    agent any
+    tools{
+        jdk 'jdk17'
+        maven 'maven3'
+    }
+    environment{
+        SCANNER_HOME= tool 'sonar-scanner'
+    }
+
+    stages {
+        stage('git-checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/khan-atiq/freestyleJenkinsjob-secretsanta-generator.git'
+            }
+        }
+
+        stage('Code-Compile') {
+            steps {
+               sh "mvn clean compile"
+            }
+        }
+        
+        stage('Unit Tests') {
+            steps {
+               sh "mvn test"
+            }
+        }
+        
+
+
+        stage('Sonar Analysis') {
+            steps {
+               withSonarQubeEnv('sonar'){
+                   sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=secretsanta2 \
+                   -Dsonar.java.binaries=. \
+                   -Dsonar.projectKey=secretsanta2 '''
+               }
+            }
+        }
+
+		 
+        stage('Code-Build') {
+            steps {
+               sh "mvn clean package"
+            }
+        }
+
+         stage('Docker Build') {
+            steps {
+               script{
+                   withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    sh "docker build -t  secretsanta . "
+                 }
+               }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+               script{
+                   withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    sh "docker tag secretsanta atiqkhan2288/secretsanta:latest"
+                    sh "docker push atiqkhan2288/secretsanta:latest"
+                 }
+               }
+            }
+        }
+        
+         stage('Docker Application') {
+            steps {
+               script{
+                   withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    sh "docker run -d -p 8081:8080 atiqkhan2288/secretsanta:latest"
+                 }
+               }
+            }
+        }
+        
+        /*	 
+        stage('Docker Image Scan') {
+            steps {
+               sh "trivy image adijaiswal/santa123:latest "
+            }
+        } 
+        */
+         }
+        
+        /*
+         post {
+            always {
+                emailext (
+                    subject: "Pipeline Status: ${BUILD_NUMBER}",
+                    body: '''<html>
+                                <body>
+                                    <p>Build Status: ${BUILD_STATUS}</p>
+                                    <p>Build Number: ${BUILD_NUMBER}</p>
+                                    <p>Check the <a href="${BUILD_URL}">console output</a>.</p>
+                                </body>
+                            </html>''',
+                    to: 'jaiswaladi246@gmail.com',
+                    from: 'jenkins@example.com',
+                    replyTo: 'jenkins@example.com',
+                    mimeType: 'text/html'
+                )
+            }
+        }
+        */
+		
+		
+
+    
+}
